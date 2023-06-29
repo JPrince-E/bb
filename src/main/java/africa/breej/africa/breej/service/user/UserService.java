@@ -23,4 +23,6 @@ public interface UserService {
     User updatePassword(String id, UpdateUserPasswordRequest updateUserPinRequest);
 
     User updateUser(String id, UpdateUserProfileRequest userProfileRequest);
+
+    boolean deleteUser(String id);
 }

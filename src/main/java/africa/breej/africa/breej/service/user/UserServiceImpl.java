@@ -143,6 +143,23 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public boolean deleteUser(String userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(!userOptional.isPresent())
+            throw new NotFoundException("User not found");
+        User user = userOptional.get();
+        user.setDeleted(true);
+        user.setTimeUpdated(LocalDateTime.now());
+
+        //userRepository.save(user);
+
+        userRepository.deleteById(userId);
+
+        // TODO create a deleted user repository
+
+        return true;
+    }
+
     public Optional<User> fetchUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }

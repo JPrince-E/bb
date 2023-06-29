@@ -50,4 +50,11 @@ public class UserController {
         return userService.updateUser(userPrincipal.getId(), userProfileRequest);
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Response> deleteUser(@CurrentUser UserPrincipal userPrincipal)
+            throws NotAcceptableException, ConflictException, NotFoundException {
+        boolean deleted = userService.deleteUser(userPrincipal.getId());
+        return ResponseEntity.ok(new Response(deleted, deleted, "User deleted successfully", null));
+    }
+
 }
