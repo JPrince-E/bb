@@ -1,7 +1,7 @@
 package africa.breej.africa.breej.security;
 
 import africa.breej.africa.breej.exception.ResourceNotFoundException;
-import africa.breej.africa.breej.model.User;
+import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.repository.UserRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;

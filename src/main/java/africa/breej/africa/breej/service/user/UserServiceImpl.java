@@ -1,12 +1,21 @@
 package africa.breej.africa.breej.service.user;
 
-import africa.breej.africa.breej.model.User;
+import africa.breej.africa.breej.exception.ConflictException;
+import africa.breej.africa.breej.exception.NotAcceptableException;
+import africa.breej.africa.breej.exception.NotFoundException;
+import africa.breej.africa.breej.exception.ResourceNotFoundException;
+import africa.breej.africa.breej.model.user.Gender;
+import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.payload.auth.SignUpRequest;
+import africa.breej.africa.breej.payload.user.UpdateUserPasswordRequest;
+import africa.breej.africa.breej.payload.user.UpdateUserProfileRequest;
 import africa.breej.africa.breej.repository.UserRepository;
+import africa.breej.africa.breej.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,13 +53,103 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> fetchUserById(String id) {
-        Optional<User> user = userRepository.findById(id);
-         return user;
-
+        return Optional.ofNullable(userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id)));
     }
 
     public List<User> fetchAllUsers() {
         return userRepository.findAll();
     }
+
+    @Override
+    public User updatePassword(String id, UpdateUserPasswordRequest updateUserPasswordRequest) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            if (!passwordEncoder.matches(updateUserPasswordRequest.getCurrentPassword(), user.getPassword()))
+                throw new NotAcceptableException("current password is incorrect");
+
+            if (passwordEncoder.matches(updateUserPasswordRequest.getNewPassword(), user.getPassword()))
+                throw new ConflictException("new password cannot be the same as current pin");
+            else {
+                String newPasswordHash = passwordEncoder.encode(updateUserPasswordRequest.getNewPassword());
+                user.setPassword(newPasswordHash);
+                user.setTimeUpdated(LocalDateTime.now());
+                userRepository.save(user);
+                return user;
+            }
+        } else {
+            throw new NotFoundException("User is not found");
+        }
+    }
+
+    @Override
+    public User updateUser(String userId, UpdateUserProfileRequest updateUserProfileRequest) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getFirstName()))
+                user.setFirstName(updateUserProfileRequest.getFirstName());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getLastName()))
+                user.setLastName(updateUserProfileRequest.getLastName());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getUsername()))
+                user.setUsername(updateUserProfileRequest.getUsername());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getPhoneNumber())) {
+                if (fetchUserByPhoneNumber(updateUserProfileRequest.getPhoneNumber()).isPresent())
+                    throw new NotAcceptableException("Phone number already exists");
+                user.setPhoneNumber(updateUserProfileRequest.getPhoneNumber());
+            }
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getEmail())) {
+                if (fetchUserByEmail(updateUserProfileRequest.getEmail()).isPresent())
+                    throw new NotAcceptableException("Email already exists");
+                user.setEmail(updateUserProfileRequest.getEmail());
+            }
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getDepartment()))
+                user.setDepartment(updateUserProfileRequest.getDepartment());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getCourseOfStudy()))
+                user.setCourseOfStudy(updateUserProfileRequest.getCourseOfStudy());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getFaculty()))
+                user.setFaculty(updateUserProfileRequest.getFaculty());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getLevel()))
+                user.setLevel(updateUserProfileRequest.getLevel());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getYearOfEntry()))
+                user.setYearOfEntry(updateUserProfileRequest.getYearOfEntry());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getNameOfSchool()))
+                user.setNameOfSchool(updateUserProfileRequest.getNameOfSchool());
+
+            if (!StringUtil.isBlank(updateUserProfileRequest.getCgpa()))
+                user.setCgpa(updateUserProfileRequest.getCgpa());
+
+            if(updateUserProfileRequest.getGender() != null)
+                user.setGender(updateUserProfileRequest.getGender());
+
+            user.setTimeUpdated(LocalDateTime.now());
+
+            return userRepository.save(user);
+        } else {
+            throw new NotFoundException("User not found");
+        }
+    }
+
+    public Optional<User> fetchUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> fetchUserByPhoneNumber(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber);
+    }
+
 
 }

@@ -1,17 +1,15 @@
-package africa.breej.africa.breej.model;
+package africa.breej.africa.breej.payload.user;
 
-import javax.validation.constraints.Email;
+import africa.breej.africa.breej.model.user.Gender;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@Document(collection = "project_breej_db_user")
-public class User {
-    @Id
-    private String id;
+public class UpdateUserProfileRequest {
 
     private String firstName;
 
@@ -22,17 +20,15 @@ public class User {
     @Email
     private String email;
 
-    private Boolean emailVerified = false;
-
-    private String password;
-
     private String courseOfStudy;
 
     private String department;
 
     private String faculty;
 
-    private String gender;
+    private String nameOfSchool;
+
+    private Gender gender;
 
     private String yearOfEntry;
 
