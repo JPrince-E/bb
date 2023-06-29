@@ -48,13 +48,13 @@ public class AuthServiceImpl implements AuthService {
     public URI registerUser(SignUpRequest signUpRequest) {
 
         if(!StringUtil.isBlank(signUpRequest.getEmail())) {
-            if(userRepository.existsByEmail(signUpRequest.getEmail())) {
+            if(userRepository.existsByEmailAndDeleted(signUpRequest.getEmail(),false)) {
                 LOGGER.info(String.format("Email address already in use: %s", signUpRequest.getEmail()));
                 throw new NotAcceptableStatusException("Email address already in use.");
             }
         }
 
-        if(userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+        if(userRepository.existsByPhoneNumberAndDeleted(signUpRequest.getPhoneNumber(), false)) {
             LOGGER.info(String.format("Phone number already in use: %s", signUpRequest.getPhoneNumber()));
             throw new NotAcceptableStatusException("Phone number already in use.");
         }
@@ -80,10 +80,8 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthResponse authenticateUser(LoginRequest loginRequest) {
         Authentication authentication=null;
-        Optional<User> existingAuth = findByEmail(loginRequest.getEmail());
-
         if(loginRequest.getEmail()!=null && !loginRequest.getEmail().isEmpty())  {
-            if(!userRepository.existsByEmail(loginRequest.getEmail())) {
+            if(!userRepository.existsByEmailAndDeleted(loginRequest.getEmail(),false)) {
                 throw new UnauthorizedException("Unauthenticated.");
             }
             authentication = authenticationManager.authenticate(
