@@ -4,7 +4,6 @@ import africa.breej.africa.breej.exception.ConflictException;
 import africa.breej.africa.breej.exception.NotAcceptableException;
 import africa.breej.africa.breej.exception.NotFoundException;
 import africa.breej.africa.breej.exception.ResourceNotFoundException;
-import africa.breej.africa.breej.model.user.Gender;
 import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.payload.auth.SignUpRequest;
 import africa.breej.africa.breej.payload.user.UpdateUserPasswordRequest;
@@ -12,10 +11,13 @@ import africa.breej.africa.breej.payload.user.UpdateUserProfileRequest;
 import africa.breej.africa.breej.repository.UserRepository;
 import africa.breej.africa.breej.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,6 +160,10 @@ public class UserServiceImpl implements UserService {
         // TODO create a deleted user repository
 
         return true;
+    }
+
+    public Page<User> fetchUserByFilters(HashMap<String, Object> filters, LocalDateTime from, LocalDateTime to, PageRequest pageRequest) {
+        return userRepository.findUserByFilters(filters, from, to, pageRequest);
     }
 
     public Optional<User> fetchUserByEmail(String email) {
