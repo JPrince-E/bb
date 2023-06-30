@@ -1,7 +1,7 @@
 package africa.breej.africa.breej.service.auth;
 
 
-import africa.breej.africa.breej.model.User;
+import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.payload.auth.AuthResponse;
 import africa.breej.africa.breej.payload.auth.LoginRequest;
 import africa.breej.africa.breej.payload.auth.SignUpRequest;

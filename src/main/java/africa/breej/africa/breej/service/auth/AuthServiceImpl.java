@@ -1,6 +1,7 @@
 package africa.breej.africa.breej.service.auth;
 
-import africa.breej.africa.breej.model.User;
+import africa.breej.africa.breej.model.user.User;
+import africa.breej.africa.breej.model.auth.AuthProvider;
 import africa.breej.africa.breej.payload.auth.AuthResponse;
 import africa.breej.africa.breej.payload.auth.LoginRequest;
 import africa.breej.africa.breej.payload.auth.SignUpRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -62,6 +64,9 @@ public class AuthServiceImpl implements AuthService {
         user.setLastName(signUpRequest.getLastName());
         user.setEmail(signUpRequest.getEmail());
         user.setPhoneNumber(signUpRequest.getPhoneNumber());
+        user.setProvider(AuthProvider.LOCAL);
+        user.setTimeCreated(LocalDateTime.now());
+
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
         User result = userRepository.save(user);
@@ -105,6 +110,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber()).get();
         UserResponse userResponse =  getUserResponseFromUser(user);
+        updateLastLogin(user);
 
         String token = passwordEncoder.encode(user.getEmail());
         return new AuthResponse(token, userResponse);
@@ -122,5 +128,10 @@ public class AuthServiceImpl implements AuthService {
             LOGGER.error("Error copying user properties");
         }
         return userResponse;
+    }
+
+    private void updateLastLogin(User user) {
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
     }
 }
