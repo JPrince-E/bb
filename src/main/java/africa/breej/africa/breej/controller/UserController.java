@@ -4,6 +4,7 @@ import africa.breej.africa.breej.exception.ConflictException;
 import africa.breej.africa.breej.exception.NotAcceptableException;
 import africa.breej.africa.breej.exception.NotFoundException;
 import africa.breej.africa.breej.model.auth.AuthProvider;
+import africa.breej.africa.breej.model.auth.UserOverview;
 import africa.breej.africa.breej.model.user.Gender;
 import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.payload.Response;
@@ -65,6 +66,16 @@ public class UserController {
             throws NotAcceptableException, ConflictException, NotFoundException {
         boolean deleted = userService.deleteUser(userPrincipal.getId());
         return ResponseEntity.ok(new Response(deleted, deleted, "User deleted successfully", null));
+    }
+
+    @GetMapping("/overview")
+    public ResponseEntity<?> getUserOverview(@CurrentUser UserPrincipal userPrincipal, @RequestParam(value = "id", required = false) final String id,
+                                             @RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") final LocalDateTime from,
+                                             @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") final LocalDateTime to
+    ) {
+        UserOverview userOverview = userService.fetchTotalUsers(id,from,to);
+        Response response = new Response(true, true, "Gotten User successfully", userOverview);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/filters")

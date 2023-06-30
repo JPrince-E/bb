@@ -1,5 +1,6 @@
 package africa.breej.africa.breej.service.user;
 
+import africa.breej.africa.breej.model.auth.UserOverview;
 import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.payload.auth.SignUpRequest;
 import africa.breej.africa.breej.payload.user.UpdateUserPasswordRequest;
@@ -32,4 +33,5 @@ public interface UserService {
 
     Page<User> fetchUserByFilters(HashMap<String, Object> filters, LocalDateTime from, LocalDateTime to, PageRequest pageRequest);
 
+    UserOverview fetchTotalUsers(String id, LocalDateTime from, LocalDateTime to);
 }

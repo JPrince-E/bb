@@ -4,6 +4,8 @@ import africa.breej.africa.breej.exception.ConflictException;
 import africa.breej.africa.breej.exception.NotAcceptableException;
 import africa.breej.africa.breej.exception.NotFoundException;
 import africa.breej.africa.breej.exception.ResourceNotFoundException;
+import africa.breej.africa.breej.model.auth.UserOverview;
+import africa.breej.africa.breej.model.auth.UserReport;
 import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.payload.auth.SignUpRequest;
 import africa.breej.africa.breej.payload.user.UpdateUserPasswordRequest;
@@ -172,6 +174,20 @@ public class UserServiceImpl implements UserService {
 
     public Optional<User> fetchUserByPhoneNumber(String phoneNumber) {
         return userRepository.findByPhoneNumber(phoneNumber);
+    }
+
+    public UserOverview fetchTotalUsers(String id, LocalDateTime from, LocalDateTime to) {
+
+        UserOverview userOverview = new UserOverview();
+
+        List<UserReport> userReportList = userRepository.userOverviewAggregation(from,to);
+
+        for(UserReport userReport: userReportList){
+            userOverview.setNumberOfUsers(userReport.getTotalCount());
+
+        }
+        return userOverview;
+
     }
 
 
