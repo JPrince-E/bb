@@ -5,15 +5,23 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends MongoRepository<User, String> {
+public interface UserRepository extends MongoRepository<User, String>, CustomUserRepository  {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByEmailAndDeleted(String email, boolean deleted);
+
     Optional<User> findByPhoneNumber(String phoneNumber);
+
+    Optional<User> findByPhoneNumberAndDeleted(String phoneNumber, boolean deleted);
+
+    Boolean existsByPhoneNumberAndDeleted(String phoneNumber, boolean deleted);
 
     Boolean existsByPhoneNumber(String phoneNumber);
 
     Boolean existsByEmail(String email);
+
+    Boolean existsByEmailAndDeleted(String email, boolean deleted);
 
 }

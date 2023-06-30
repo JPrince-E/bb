@@ -4,7 +4,8 @@ import africa.breej.africa.breej.exception.ConflictException;
 import africa.breej.africa.breej.exception.NotAcceptableException;
 import africa.breej.africa.breej.exception.NotFoundException;
 import africa.breej.africa.breej.exception.ResourceNotFoundException;
-import africa.breej.africa.breej.model.user.Gender;
+import africa.breej.africa.breej.model.auth.UserOverview;
+import africa.breej.africa.breej.model.auth.UserReport;
 import africa.breej.africa.breej.model.user.User;
 import africa.breej.africa.breej.payload.auth.SignUpRequest;
 import africa.breej.africa.breej.payload.user.UpdateUserPasswordRequest;
@@ -12,10 +13,13 @@ import africa.breej.africa.breej.payload.user.UpdateUserProfileRequest;
 import africa.breej.africa.breej.repository.UserRepository;
 import africa.breej.africa.breej.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,12 +147,47 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public boolean deleteUser(String userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(!userOptional.isPresent())
+            throw new NotFoundException("User not found");
+        User user = userOptional.get();
+        user.setDeleted(true);
+        user.setTimeUpdated(LocalDateTime.now());
+
+        //userRepository.save(user);
+
+        userRepository.deleteById(userId);
+
+        // TODO create a deleted user repository
+
+        return true;
+    }
+
+    public Page<User> fetchUserByFilters(HashMap<String, Object> filters, LocalDateTime from, LocalDateTime to, PageRequest pageRequest) {
+        return userRepository.findUserByFilters(filters, from, to, pageRequest);
+    }
+
     public Optional<User> fetchUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     public Optional<User> fetchUserByPhoneNumber(String phoneNumber) {
         return userRepository.findByPhoneNumber(phoneNumber);
+    }
+
+    public UserOverview fetchTotalUsers(String id, LocalDateTime from, LocalDateTime to) {
+
+        UserOverview userOverview = new UserOverview();
+
+        List<UserReport> userReportList = userRepository.userOverviewAggregation(from,to);
+
+        for(UserReport userReport: userReportList){
+            userOverview.setNumberOfUsers(userReport.getTotalCount());
+
+        }
+        return userOverview;
+
     }
 
 
