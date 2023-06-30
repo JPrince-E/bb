@@ -20,6 +20,8 @@ public class UpdateUserProfileRequest {
     @Email
     private String email;
 
+    private String phoneNumber;
+
     private String courseOfStudy;
 
     private String department;
@@ -35,7 +37,5 @@ public class UpdateUserProfileRequest {
     private String level;
 
     private String cgpa;
-
-    private String phoneNumber;
 
 }
