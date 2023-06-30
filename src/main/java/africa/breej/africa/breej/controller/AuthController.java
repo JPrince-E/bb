@@ -34,12 +34,8 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest) {
-//
-//        if (authService.findByEmail(signUpRequest.getEmail()).isPresent()) {
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
-//        }
 
         URI location = authService.registerUser(signUpRequest);
 

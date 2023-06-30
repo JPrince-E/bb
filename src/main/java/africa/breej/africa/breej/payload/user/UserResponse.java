@@ -25,6 +25,8 @@ public class UserResponse {
 
     private String password;
 
+    private String phoneNumber;
+
     private String courseOfStudy;
 
     private String department;
@@ -38,7 +40,5 @@ public class UserResponse {
     private String level;
 
     private String cgpa;
-
-    private String phoneNumber;
 
 }
