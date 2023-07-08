@@ -60,11 +60,11 @@
 			<artifactId>aws-java-sdk-elasticache</artifactId>
 			<version>1.12.262</version>
 		</dependency>
-		<dependency>
-			<groupId>com.project.huzz</groupId>
-			<artifactId>Backend</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.project.huzz</groupId>-->
+<!--			<artifactId>Backend</artifactId>-->
+<!--			<version>0.0.1-SNAPSHOT</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
